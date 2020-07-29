@@ -25,20 +25,22 @@ export default class Board extends Component {
             if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
 
                 if (squares[a] === 'X') {
-                    return alert("x win");
+                    return squares[a];
                 } else {
-                    return alert("O win")
+                    return squares[a];
                 }
 
 
             }
         }
-        return null;
+        return null ;
     }
 
+    
     selectSquare=(id)=>{
-        let array = this.props.squareList
+        let array = this.props.squareList.slice()
         let gameOverValue = this.props.gameOver
+        let historyArray = this.props.history
 
         if (array[id] !== '') {
             return
@@ -47,20 +49,29 @@ export default class Board extends Component {
         array[id]=this.props.nextPlayer ? "X" : "O"
 
 
+        let winnerValue = this.calculateWinner(array);
 
-        let winnerValue = this.calculateWinner (array);
+        if(winnerValue !== null) {
+            this.props.postData();
+        }
 
         
 
         if(winnerValue == null && !array.includes('')) {
             gameOverValue = !gameOverValue;
-        } 
+        }
+
+        historyArray.push({
+            squareList: array,
+            nextPlayer: !this.props.nextPlayer,
+          });
 
         this.props.setParentsState({
             squareList: array ,
             nextPlayer: !this.props.nextPlayer , 
             winner: winnerValue,
             gameOver: gameOverValue,
+            history: historyArray,
         })
     }
 
@@ -73,7 +84,7 @@ export default class Board extends Component {
         return (
             <div>
                  <h3>nextPlayer: {this.props.nextPlayer? 'X' : 'O'}</h3>
-                 <h3>{this.props.gameOver == true ? `gameOver` : `winner is: ${this.props.winner}` }</h3>
+                 <h3>Game status: {this.props.winner}</h3>
                 <div style={{ display: "flex" }}>
                     <Square id={0} selectSquare={this.selectSquare} value={this.props.squareList[0]}/>
                     <Square id={1} selectSquare={this.selectSquare} value={this.props.squareList[1]}/>
