@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import Board from "./components/Board"
 import "./App.css"
 import FacebookLogin from 'react-facebook-login';
+import { Col, Row} from 'react-bootstrap'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default class App extends Component {
   constructor(props) {
@@ -26,7 +28,7 @@ export default class App extends Component {
   postData = async () => {
     let data = new URLSearchParams();
     data.append("player", "Quang");
-    data.append("score", -99999);
+    data.append("score", "10");
     const url = `http://ftw-highscores.herokuapp.com/tictactoe-dev`;
     const response = await fetch(url, {
       method: "POST",
@@ -44,6 +46,11 @@ export default class App extends Component {
     let data = await fetch(url)
     let result = await data.json()
     console.log("abc", result)
+    this.setState({
+      ...this.state,
+      otherPlayers: result.items
+      // otherScore:result.item.score
+    })
   }
 
   componentDidMount() {
@@ -109,7 +116,21 @@ export default class App extends Component {
             );
           })}
           </ol>
-          <ol>Ranking</ol>
+          <Row className="scoll-style set-bottom">
+                  <ol> <span style={{ fontWeight: "bold" }}>Ranking</span>
+                    {this.state.otherPlayers ? this.state.otherPlayers.map((item, index) => {
+                      return (
+                        <Row>
+                          <Col>Player: {item.player}</Col>
+                          <Col>Score: {item.score}</Col>
+                        </Row>
+                      )
+
+                    }) : null}
+
+                  </ol>
+                </Row>
+
         </div>
       </div>
     )
